@@ -37,46 +37,45 @@ import os
 from datetime import date
 import shutil
 
-def copytreee(src, dst):
-    shutil.copytree(src, dst)
+# def copytreee(src, dst):
+#     shutil.copytree(src, dst)
 
-qvwfiles=[]
-# drying_command='"C:/Program Files/QlikView/Qv.exe" /r ' #РАБОТАЕТ
-# drying_command='"C:/Program Files/QlikView/Qv.exe" /r /visDrying=1 ' #РАБОТАЕТ
-drying_command='"C:/Program Files/QlikView/Qv.exe" /r /visDrying=1 '
-
-def TraverseDir(cur):
-    print('    TraverseDir ' + cur)
-
-    for dr in os.listdir(cur):
-        abs_path = os.path.join(cur, dr)
-        # print('  TraverseDir abs_path: ' + abs_path)
-
-        if os.path.isdir(abs_path):
-            # print('dir')
-            TraverseDir(abs_path)
-#.qvw мб в имени папки!
-        # elif 'qvw' in dr[-3:]:
-        elif dr.endswith('.qvw'):
-            # qvwfiles.append(abs_path)
-            comm = drying_command
-            comm += ("'")
-            comm += (abs_path)
-            comm + ("'")
-            qvwfiles.append(comm)
-            # print(abs_path)
-
-src = "E:\QVProjects — копия"
-dst = "E:\QVProjects — копия2 " + str(date.today())
-
-copytreee(src, dst)
-
-TraverseDir(dst)
-
-for command in qvwfiles:
-    print(command)
+def LocalCopyAndDryingFile(localPathFrom, localPathTo):
+    drying_command='"C:/Program Files/QlikView/Qv.exe" /r /visDrying=1 '
+    shutil.copyfile(localPathFrom, localPathTo)
+    command = drying_command + "'" + localPathTo + "'"
     os.system(command)
 
+def TraverseDir(dirPathFrom, dirPathTo):
+    for dr in os.listdir(dirPathFrom):
+        abs_pathFrom = os.path.join(dirPathFrom, dr)
+        abs_pathTo = os.path.join(dirPathTo, dr)
+
+        if os.path.isdir(abs_pathFrom):
+            TraverseDir(abs_pathFrom, abs_pathTo)
+        elif dr.endswith('.qvw'):
+            LocalCopyAndDryingFile(abs_pathFrom, abs_pathTo)
+
+dirLocalSrc = "E:\QVProjects — копия"
+dirLocalDst = "E:\QVProjects — копия2 " + str(date.today())
+
+TraverseDir(dirLocalSrc, dirLocalDst)
+
+            # qvwFilesLocalFrom.append(abs_pathFrom)
+            # qvwFileLocalTo = os.path.join(localDst, dr)
+            # qvwFilesLocalTo.append(qvwFileLocalTo)
+
+# copytreee(src, dst)
+
+# qvwFilesLocalFrom=[]
+# qvwFilesLocalTo=[]
+# drying_command='"C:/Program Files/QlikView/Qv.exe" /r ' #РАБОТАЕТ
+# drying_command='"C:/Program Files/QlikView/Qv.exe" /r /visDrying=1 ' #РАБОТАЕТ
+# drying_command='"C:/Program Files/QlikView/Qv.exe" /r /visDrying=1 '
+
+# for filePath in qvwFilesLocalFrom:
+#     print(filePath)
+#     LocalCopyAndDryingFile(filePath, localPathTo, drying_command)
 
 
 # drying_command='"C:/Program Files/QlikView/Qv.exe" /r '
